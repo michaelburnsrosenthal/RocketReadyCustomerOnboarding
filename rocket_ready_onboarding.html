@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rocket Ready - Onboarding Flow</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            min-height: 100vh;
+        }
+        
+        .container {
+            display: flex;
+            min-height: 100vh;
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #f5f5f5;
+        }
+        
+        .progress-sidebar {
+            width: 80px;
+            background-color: #e8e8e8;
+            padding: 20px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+        }
+        
+        .progress-step {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            color: white;
+        }
+        
+        .progress-step.active {
+            background-color: #d32f2f;
+        }
+        
+        .progress-step.completed {
+            background-color: #666;
+        }
+        
+        .progress-step.inactive {
+            background-color: #ccc;
+        }
+        
+        .content-area {
+            flex: 1;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .logo-area {
+            display: flex;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+        
+        .logo-mark {
+            width: 32px;
+            height: 32px;
+            background-color: #d32f2f;
+            border-radius: 4px;
+            margin-right: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        
+        .logo-text {
+            font-size: 18px;
+            font-weight: bold;
+            line-height: 1.2;
+        }
+        
+        .screen {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+        }
+        
+        .screen.active {
+            display: flex;
+        }
+        
+        .screen-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        h1 {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        
+        h2 {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 16px;
+            color: #333;
+        }
+        
+        p {
+            font-size: 16px;
+            line-height: 1.5;
+            margin-bottom: 20px;
+            color: #555;
+        }
+        
+        .consent-box {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin: 20px 0;
+        }
+        
+        input[type="checkbox"] {
+            margin-top: 4px;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            background-color: white;
+        }
+        
+        .time-slots {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
+            margin: 20px 0;
+        }
+        
+        .time-slot {
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            background-color: white;
+        }
+        
+        .time-slot:hover {
+            border-color: #d32f2f;
+        }
+        
+        .time-slot.selected {
+            border-color: #d32f2f;
+            background-color: #fef5f5;
+        }
+        
+        .assessment-results {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 4px solid #d32f2f;
+        }
+        
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .result-item:last-child {
+            border-bottom: none;
+        }
+        
+        .status-good {
+            color: #4caf50;
+            font-weight: bold;
+        }
+        
+        .status-needs-work {
+            color: #ff9800;
+            font-weight: bold;
+        }
+        
+        .status-critical {
+            color: #f44336;
+            font-weight: bold;
+        }
+        
+        .coach-intro {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+        
+        .coach-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: #d32f2f;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .btn {
+            background-color: #d32f2f;
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-top: 20px;
+        }
+        
+        .btn:hover {
+            background-color: #b71c1c;
+        }
+        
+        .btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .btn-secondary {
+            background-color: transparent;
+            color: #d32f2f;
+            border: 2px solid #d32f2f;
+            padding: 16px 32px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-top: 20px;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #d32f2f;
+            color: white;
+        }
+        
+        .navigation {
+            display: flex;
+            gap: 12px;
+            margin-top: 40px;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .progress-sidebar {
+                width: 100%;
+                height: 60px;
+                flex-direction: row;
+                justify-content: center;
+                padding: 10px 0;
+                gap: 20px;
+            }
+            
+            .content-area {
+                padding: 20px;
+            }
+            
+            .time-slots {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="progress-sidebar">
+            <div class="progress-step active" id="step1">1</div>
+            <div class="progress-step inactive" id="step2">2</div>
+            <div class="progress-step inactive" id="step3">3</div>
+            <div class="progress-step inactive" id="step4">4</div>
+            <div class="progress-step inactive" id="step5">5</div>
+        </div>
+        
+        <div class="content-area">
+            <div class="logo-area">
+                <div class="logo-mark">R</div>
+                <div class="logo-text">
+                    Rocket<br>Ready
+                </div>
+            </div>
+            
+            <!-- Screen 1: Welcome & Consent -->
+            <div class="screen active" id="screen1">
+                <div class="screen-content">
+                    <h1>Your Path Back to Homeownership Starts Here</h1>
+                    <p>We know being declined for a mortgage is disappointing. But here's the good news: we can help you become mortgage-ready faster than you think.</p>
+                    
+                    <p>Rocket Ready combines the mortgage expertise of Rocket Mortgage with personalized credit coaching to get you approved. Unlike generic credit repair, we know exactly what our underwriters need to say "yes" to your application.</p>
+                    
+                    <div class="consent-box">
+                        <h2>Let's Get Started</h2>
+                        <p>To provide you with the most effective coaching, we'd like to review your recent Rocket Mortgage application and credit information.</p>
+                        
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="consent" />
+                            <label for="consent">I consent to Rocket Ready accessing my Rocket Mortgage application data and credit information to provide personalized coaching recommendations.</label>
+                        </div>
+                        
+                        <p style="font-size: 14px; color: #666; margin-top: 12px;">
+                            Your information is secure and will only be used to help you achieve mortgage approval. You can revoke this consent at any time.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="navigation">
+                    <button class="btn" onclick="nextScreen()" id="consent-btn" disabled>Continue</button>
+                </div>
+            </div>
+            
+            <!-- Screen 2: Goal Setting -->
+            <div class="screen" id="screen2">
+                <div class="screen-content">
+                    <h1>Tell Us About Your Homeownership Goals</h1>
+                    <p>Understanding your timeline and goals helps us prioritize the right actions to get you mortgage-ready.</p>
+                    
+                    <div class="input-group">
+                        <label for="timeline">When do you want to buy a home?</label>
+                        <select id="timeline">
+                            <option value="">Select your timeline</option>
+                            <option value="3-months">Within 3 months</option>
+                            <option value="6-months">3-6 months</option>
+                            <option value="12-months">6-12 months</option>
+                            <option value="18-months">12-18 months</option>
+                            <option value="longer">More than 18 months</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="price-range">What's your target home price range?</label>
+                        <select id="price-range">
+                            <option value="">Select price range</option>
+                            <option value="under-200k">Under $200,000</option>
+                            <option value="200k-400k">$200,000 - $400,000</option>
+                            <option value="400k-600k">$400,000 - $600,000</option>
+                            <option value="600k-800k">$600,000 - $800,000</option>
+                            <option value="over-800k">Over $800,000</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="location">Where are you looking to buy?</label>
+                        <input type="text" id="location" placeholder="City, State" />
+                    </div>
+                </div>
+                
+                <div class="navigation">
+                    <button class="btn-secondary" onclick="prevScreen()">Back</button>
+                    <button class="btn" onclick="nextScreen()">Continue</button>
+                </div>
+            </div>
+            
+            <!-- Screen 3: Credit Assessment -->
+            <div class="screen" id="screen3">
+                <div class="screen-content">
+                    <h1>Your Credit Assessment Results</h1>
+                    <p>Based on your Rocket Mortgage application, here's what we found:</p>
+                    
+                    <div class="assessment-results">
+                        <div class="result-item">
+                            <span>Credit Score (FICO)</span>
+                            <span class="status-needs-work">642 (Need 680+)</span>
+                        </div>
+                        <div class="result-item">
+                            <span>Debt-to-Income Ratio</span>
+                            <span class="status-critical">47% (Need <43%)</span>
+                        </div>
+                        <div class="result-item">
+                            <span>Payment History</span>
+                            <span class="status-needs-work">2 Late Payments</span>
+                        </div>
+                        <div class="result-item">
+                            <span>Down Payment</span>
+                            <span class="status-good">✓ Sufficient</span>
+                        </div>
+                        <div class="result-item">
+                            <span>Employment History</span>
+                            <span class="status-good">✓ Verified</span>
+                        </div>
+                    </div>
+                    
+                    <p><strong>Good news:</strong> Your biggest obstacles are debt-to-income ratio and credit score. These are exactly the areas where our coaches excel at creating fast improvement strategies.</p>
+                    
+                    <p>In your coaching session, we'll create a detailed action plan to get you mortgage-ready within your timeline.</p>
+                </div>
+                
+                <div class="navigation">
+                    <button class="btn-secondary" onclick="prevScreen()">Back</button>
+                    <button class="btn" onclick="nextScreen()">Schedule My Coaching Session</button>
+                </div>
+            </div>
+            
+            <!-- Screen 4: Scheduling -->
+            <div class="screen" id="screen4">
+                <div class="screen-content">
+                    <h1>Schedule Your First Coaching Session</h1>
+                    <p>Choose a time that works for you. All sessions are 60 minutes and conducted over video call.</p>
+                    
+                    <h2>Available This Week</h2>
+                    <div class="time-slots">
+                        <div class="time-slot" onclick="selectTimeSlot(this)" data-time="tue-2pm">
+                            <div>Tuesday</div>
+                            <div>2:00 PM</div>
+                        </div>
+                        <div class="time-slot" onclick="selectTimeSlot(this)" data-time="tue-4pm">
+                            <div>Tuesday</div>
+                            <div>4:00 PM</div>
+                        </div>
+                        <div class="time-slot" onclick="selectTimeSlot(this)" data-time="wed-10am">
+                            <div>Wednesday</div>
+                            <div>10:00 AM</div>
+                        </div>
+                        <div class="time-slot" onclick="selectTimeSlot(this)" data-time="wed-3pm">
+                            <div>Wednesday</div>
+                            <div>3:00 PM</div>
+                        </div>
+                        <div class="time-slot" onclick="selectTimeSlot(this)" data-time="thu-9am">
+                            <div>Thursday</div>
+                            <div>9:00 AM</div>
+                        </div>
+                        <div class="time-slot" onclick="selectTimeSlot(this)" data-time="thu-1pm">
+                            <div>Thursday</div>
+                            <div>1:00 PM</div>
+                        </div>
+                    </div>
+                    
+                    <p style="font-size: 14px; color: #666;">Need more times? <span style="color: #d32f2f; text-decoration: underline; cursor: pointer;">Select here.</span></p>
+                </div>
+                
+                <div class="navigation">
+                    <button class="btn-secondary" onclick="prevScreen()">Back</button>
+                    <button class="btn" onclick="nextScreen()" id="schedule-btn" disabled>Confirm Session</button>
+                </div>
+            </div>
+            
+            <!-- Screen 5: Confirmation -->
+            <div class="screen" id="screen5">
+                <div class="screen-content">
+                    <h1>You're All Set!</h1>
+                    <p>Your coaching session is confirmed for <strong>Tuesday at 2:00 PM</strong></p>
+                    
+                    <div class="coach-intro">
+                        <div class="coach-avatar">S</div>
+                        <div>
+                            <h2>Meet Your Coach: Sarah Martinez</h2>
+                            <p>Sarah specializes in debt-to-income optimization and has helped over 200 clients become mortgage-ready. She's excited to work with you!</p>
+                        </div>
+                    </div>
+                    
+                    <h2>What to Expect in Your Session:</h2>
+                    <ul style="margin: 20px 0; padding-left: 20px;">
+                        <li>Detailed review of your credit report and mortgage application</li>
+                        <li>Personalized action plan with specific next steps</li>
+                        <li>Timeline for becoming mortgage-ready</li>
+                        <li>Strategies to reduce your debt-to-income ratio quickly</li>
+                        <li>Credit score improvement tactics that work fastest</li>
+                    </ul>
+                    
+                    <p><strong>Before your session:</strong> Gather your most recent credit card statements and any collection notices you've received.</p>
+                    
+                    <p>You'll receive a calendar invitation and Zoom link within the next hour.</p>
+                </div>
+                
+                <div class="navigation">
+                    <button class="btn" onclick="window.location.reload()">Start Over</button>
+                    <button class="btn-secondary">Add to Calendar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let currentScreen = 1;
+        
+        // Handle consent checkbox
+        document.getElementById('consent').addEventListener('change', function() {
+            document.getElementById('consent-btn').disabled = !this.checked;
+        });
+        
+        function nextScreen() {
+            if (currentScreen < 5) {
+                // Hide current screen
+                document.getElementById(`screen${currentScreen}`).classList.remove('active');
+                updateStep(currentScreen, 'completed');
+                
+                // Show next screen
+                currentScreen++;
+                document.getElementById(`screen${currentScreen}`).classList.add('active');
+                updateStep(currentScreen, 'active');
+            }
+        }
+        
+        function prevScreen() {
+            if (currentScreen > 1) {
+                // Hide current screen
+                document.getElementById(`screen${currentScreen}`).classList.remove('active');
+                updateStep(currentScreen, 'inactive');
+                
+                // Show previous screen
+                currentScreen--;
+                document.getElementById(`screen${currentScreen}`).classList.add('active');
+                updateStep(currentScreen, 'active');
+            }
+        }
+        
+        function updateStep(stepNumber, status) {
+            const step = document.getElementById(`step${stepNumber}`);
+            step.classList.remove('active', 'completed', 'inactive');
+            step.classList.add(status);
+        }
+        
+        function selectTimeSlot(element) {
+            // Remove selection from all slots
+            document.querySelectorAll('.time-slot').forEach(slot => {
+                slot.classList.remove('selected');
+            });
+            
+            // Select clicked slot
+            element.classList.add('selected');
+            
+            // Enable continue button
+            document.getElementById('schedule-btn').disabled = false;
+        }
+    </script>
+</body>
+</html>
